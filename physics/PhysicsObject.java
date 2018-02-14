@@ -5,25 +5,25 @@ import util.math.Vector;
 
 public abstract class PhysicsObject {
 	
-	protected Vector acceleration;
+	protected Vector acceleration = new Vector(3);
 	
 	/** 
 	 * Cached velocity, updated after every tick
 	 */
-	private Vector _velocity;
+	private Vector _velocity = new Vector(3);
 	/**
 	 * Cached position, updated after every tick
 	 */
-	private Vector _position;
+	private Vector _position = new Vector(3);
 	
 	/**
 	 * Real velocity
 	 */
-	protected Vector velocity;
+	protected Vector velocity = new Vector(3);
 	/**
 	 * Real position
 	 */
-	protected Vector position;
+	protected Vector position = new Vector(3);
 	
 	public double mass;
 	public Hitbox hitbox;

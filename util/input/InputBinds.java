@@ -10,8 +10,8 @@ public class InputBinds {
 	public static Keybind backward = new Keybind(KeyEvent.VK_S);
 	public static Keybind left = new Keybind(KeyEvent.VK_A);
 	public static Keybind right = new Keybind(KeyEvent.VK_D);
-	public static Keybind rise = new Keybind(KeyEvent.VK_SPACE);
-	public static Keybind fall = new Keybind(KeyEvent.VK_SHIFT);
+	public static Keybind jump = new Keybind(KeyEvent.VK_SPACE);
+	public static Keybind sprint = new Keybind(KeyEvent.VK_SHIFT);
 	
 	public static MouseBind look = new MouseBind();
 	
@@ -20,8 +20,8 @@ public class InputBinds {
 		bindTo.addKeyListener(InputBinds.backward);
 		bindTo.addKeyListener(InputBinds.left);
 		bindTo.addKeyListener(InputBinds.right);
-		bindTo.addKeyListener(InputBinds.rise);
-		bindTo.addKeyListener(InputBinds.fall);
+		bindTo.addKeyListener(InputBinds.jump);
+		bindTo.addKeyListener(InputBinds.sprint);
 		
 		bindTo.addMouseMotionListener(look);
 	}

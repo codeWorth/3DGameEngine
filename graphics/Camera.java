@@ -1,6 +1,5 @@
 package graphics;
 
-import util.input.InputBinds;
 import util.math.Matrix;
 import util.math.Vector;
 
@@ -110,40 +109,7 @@ public class Camera {
 	public static int CAM_HEIGHT = 700;
 	
 	public static double FOV = 100.0 / 180.0 * Math.PI;
-	public static double CAM_DISTANCE = Math.tan(FOV/2) * CAM_WIDTH/2;
-	public static final double CAM_MOVE_SPEED = 25;
-	
-	public static void graphicsTick() {		
-		double dX = 0;
-		double dZ = 0;
-		
-		if (InputBinds.forward.state) {
-			dZ += CAM_MOVE_SPEED;
-		}
-		if (InputBinds.backward.state) {
-			dZ -= CAM_MOVE_SPEED;
-		}
-		if (InputBinds.left.state) {
-			dX -= CAM_MOVE_SPEED;
-		}
-		if (InputBinds.right.state) {
-			dX += CAM_MOVE_SPEED;
-		}
-		
-		double theta = kCAM_ROTATION.matrix[0][1];
-		double nDX = dX * Math.cos(theta) - dZ * Math.sin(theta);
-		double nDZ = dX * Math.sin(theta) + dZ * Math.cos(theta);
-		
-		CAM_POSITION.matrix[0][0] += nDX;
-		CAM_POSITION.matrix[0][2] += nDZ;
-		
-		if (InputBinds.rise.state) {
-			Camera.CAM_POSITION.matrix[0][1] += CAM_MOVE_SPEED;
-		} else if (InputBinds.fall.state) {
-			Camera.CAM_POSITION.matrix[0][1] -= CAM_MOVE_SPEED;
-		}
-		
-		
-	}
+	public static double CAM_DISTANCE = Math.tan(FOV/2) * CAM_WIDTH/2;	
+
 	
 }

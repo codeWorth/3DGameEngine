@@ -208,6 +208,42 @@ public class Vector extends Matrix {
 		return (m1Sign != 0 && n1Sign != 0 && n1Sign == -n2Sign && m1Sign == -m2Sign);
 	}
 	
+	/**
+	 * Returns the x value of this vector, if it exists.
+	 * This will throw an ArrayOutOfBoundsException
+	 * if less than matrix 1 height.
+	 * 
+	 * @return The X coordinate value
+	 */
+	public double x() {
+		return matrix[0][0];
+	}
+	
+	/**
+	 * Returns the y value of this vector, if it exists.
+	 * This will throw an ArrayOutOfBoundsException
+	 * if less than matrix 2 height.
+	 * 
+	 * @return The Y coordinate value
+	 */
+	public double y() {
+		return matrix[0][1];
+	}
+	
+	/**
+	 * Returns the z value of this vector, if it exists.
+	 * This will throw an ArrayOutOfBoundsException
+	 * if less than matrix 3 height.
+	 * 
+	 * @return The Z coordinate value
+	 */
+	public double z() {
+		return matrix[0][2];
+	}
+	
+	/**
+	 * Create a mutable independent copy of this vector.
+	 */
 	public Vector clone() {
 		return new Vector(this.height, this.matrix[0]);
 	}

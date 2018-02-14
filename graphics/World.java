@@ -38,7 +38,9 @@ public class World {
 		add(MOVEY_BOI);
 		add(new RectPrism(800, 1200, -300, 600, 800, 600));
 		add(new RectPrism(100, -600, 1600, 400, 300, 700));
+		add(new RectPrism(0, 0, 0, 10000, 10000, 10000));
 		add(new Point(0, 0, 0));
+		add(new Character());
 		add(new FrameCounter());
 		
 		timer = new Timer(timerDelay, new ActionListener() {
@@ -66,9 +68,7 @@ public class World {
 		timer.start();
 	}
 	
-	public static void graphicsUpdate() {
-		Camera.graphicsTick();
-		
+	public static void graphicsUpdate() {		
 		int size = visuals.size();
 		
 		for (int i = 1; i < size; i++) {
