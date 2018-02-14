@@ -12,7 +12,8 @@ public class Surface extends JPanel implements Runnable {
 
 	private Thread t;
 	
-	private final int DELAY = 25;
+	private final int FPS = 60;
+	private final int DELAY = 1000/FPS;
 	
 	public Surface() {
 		super();

@@ -53,7 +53,6 @@ public class RectPrism implements Drawable {
 		
 		this.vertices = new Vector[8];
 		
-		/*
 		this.vertices[VertexLocation.ULF] = new Vector(3, -dX/2, dY/2, -dZ/2);
 		this.vertices[VertexLocation.URF] = new Vector(3, dX/2, dY/2, -dZ/2);
 		this.vertices[VertexLocation.LLF] = new Vector(3, -dX/2, -dY/2, -dZ/2);
@@ -62,17 +61,6 @@ public class RectPrism implements Drawable {
 		this.vertices[VertexLocation.URB] = new Vector(3, dX/2, dY/2, dZ/2);
 		this.vertices[VertexLocation.LLB] = new Vector(3, -dX/2, -dY/2, dZ/2);
 		this.vertices[VertexLocation.LRB] = new Vector(3, dX/2, -dY/2, dZ/2);
-		*/ 
-		
-		this.vertices[VertexLocation.ULF] = new Vector(3, -dX, dY/2, -dZ/2);
-		this.vertices[VertexLocation.URF] = new Vector(3, dX, dY/2, -dZ/2);
-		this.vertices[VertexLocation.LLF] = new Vector(3, -dX/2, -dY/2, -dZ);
-		this.vertices[VertexLocation.LRF] = new Vector(3, dX/2, -dY/2, -dZ);
-		this.vertices[VertexLocation.ULB] = new Vector(3, -dX, dY/2, dZ/2);
-		this.vertices[VertexLocation.URB] = new Vector(3, dX, dY/2, dZ/2);
-		this.vertices[VertexLocation.LLB] = new Vector(3, -dX/2, -dY/2, dZ);
-		this.vertices[VertexLocation.LRB] = new Vector(3, dX/2, -dY/2, dZ);
-		
 		
 		this.width = dX;
 		this.height = dY;
