@@ -1,7 +1,6 @@
 package graphics.shapes;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
 
 import graphics.Camera;
 import graphics.Drawable;
@@ -30,6 +29,10 @@ public class RectPrism implements Drawable {
 	public Vector[] resultVectors;
 	private Vector[] pVectors;
 	private Vector tempVector = new Vector(3);
+	private boolean inFrame = false;
+	private boolean needVectors = true;
+	
+	public float color = 0.5f;
 	
 	private static int[][] facePaths = {{0, 1, 3, 2}, {6, 7, 5, 4}, {0, 2, 6, 4}, {5, 7, 3, 1}, {4, 5, 1, 0}, {2, 3, 7, 6}};
 	private Face[] faces = new Face[6];
@@ -73,15 +76,20 @@ public class RectPrism implements Drawable {
 			resultVectors[i] = new Vector(3);
 		}
 		
-		Vector[] vertexes = new Vector[4];
+		int[][] triPaths = {{0, 1, 2}, {0, 3, 2}};
 		for (int i = 0; i < faces.length; i++) {
+						
+			Vector[] vertexes = new Vector[4];
+			Vector[] pVectorReferences = new Vector[4];
+			
 			int j = 0;
 			for (int vertex : facePaths[i]) {
-				vertexes[j] = this.vertices[vertex];
+				vertexes[j] = this.vertices[vertex].clone();
+				pVectorReferences[j] = this.pVectors[vertex];
 				j++;
 			}
 			
-			this.faces[i] = new Face(this.position, vertexes);
+			this.faces[i] = new Face(this.position, vertexes, pVectorReferences, triPaths);
 		}
 	
 	}
@@ -100,10 +108,48 @@ public class RectPrism implements Drawable {
 				ULF.matrix[0][1] - LRB.matrix[0][1],
 				LRB.matrix[0][2] - ULF.matrix[0][2]);
 	}
+	
+	/**
+	 * Gets the projected 2D vectors, and puts it into
+	 * this.pVectors. Returns whether this rectangular prism
+	 * is within the frame. Also sets the inFrame boolean to true or false.
+	 * Also sets needVectors to false, because the pVectors have been found.
+	 * 
+	 */
+	private void getPVectors() {
+		
+		needVectors = false;
+		double time = System.nanoTime();
+		
+		double[][] r = Camera.CAM_ROTATION().matrix;
+		double rX = r[0][0];
+		double rY = r[0][1];
+		double rZ = r[0][2];
+		Matrix rotMatrix = Camera.ALL_ROTATION_MATRIX(rX, rY, rZ);
+						
+		this.inFrame = false;
+		
+		for (int i = 0; i < 8; i++) {
+			tempVector.set(this.vertices[i]);
+			tempVector.add(this.position);
+			Matrix.productTranslate(tempVector, rotMatrix, Camera.CAM_POSITION, resultVectors[i]);
+			Camera.projectVector(resultVectors[i], pVectors[i]);
+			
+			if (!this.inFrame && resultVectors[i].matrix[0][2] > 0 && Camera.inFrame(pVectors[i])) {
+				this.inFrame = true;
+			}
+		}
+		
+		World.mathTime += System.nanoTime() - time;
+	}
 
 	@Override
-	public void draw(Graphics2D ctx) {
+	public void draw() {
 				
+		if (needVectors) {
+			getPVectors();
+		}
+		
 		for (Face face : faces) {
 			float lightLevel = (float)face.getLightLevel(World.LIGHT_SOURCE);
 			lightLevel *= 0.5;
@@ -112,36 +158,24 @@ public class RectPrism implements Drawable {
 				lightLevel = 0.1f;
 			}
 			
-			ctx.setPaint(Color.getHSBColor(0.65f, 1f, lightLevel));
+			Color color = Color.getHSBColor(this.color, 1f, lightLevel);
 			if (face.isFacingCamera()) {
-				this.tempVector.set(this.position);
-				face.draw(ctx, this.tempVector);
+				face.draw(color.getRed(), color.getGreen(), color.getBlue());
 			}
 		}
 
+		needVectors = true;
+		
 	}
-
+	
 	@Override
-	public boolean inCameraWindow() {		
-		double[][] r = Camera.CAM_ROTATION().matrix;
-		double rX = r[0][0];
-		double rY = r[0][1];
-		double rZ = r[0][2];
-		Matrix rotMatrix = Camera.ALL_ROTATION_MATRIX(rX, rY, rZ);
-						
-		boolean inFrame = false;
-		
-		for (int i = 0; i < 8; i++) {
-			tempVector.set(this.vertices[i]);
-			tempVector.add(this.position);
-			Matrix.productTranslate(tempVector, rotMatrix, Camera.CAM_POSITION, resultVectors[i]);
-			Camera.projectVector(resultVectors[i], pVectors[i]);
-			
-			if (!inFrame && resultVectors[i].matrix[0][2] > 0 && Camera.inFrame(pVectors[i])) {
-				inFrame = true;
-			}
+	public boolean inCameraWindow() {
+		if (needVectors) {
+			getPVectors();
 		}
-		
+		if (!inFrame) {
+			needVectors = true;
+		}
 		return inFrame;
 	}
 

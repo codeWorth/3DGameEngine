@@ -1,11 +1,8 @@
 package graphics.shapes;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.Ellipse2D;
-
 import graphics.Camera;
 import graphics.Drawable;
+import graphics.Surface;
 import util.math.Matrix;
 import util.math.Vector;
 
@@ -15,22 +12,25 @@ public class Point implements Drawable {
 	private Matrix _position =  new Vector(3);
 	private Matrix result = new Vector(3);
 	private Vector projection = new Vector(2);
-	private double radius = 15;
+	private int radius = 15;
 	
 	public Point(double x, double y, double z) {
 		position = new Vector(3, x, y, z);
 	}
 
 	@Override
-	public void draw(Graphics2D ctx) {
+	public void draw() {
 		Camera.projectVector(result, projection);
 		
-		double x = projection.matrix[0][0];
-		double y = projection.matrix[0][1];
+		int x = (int) projection.matrix[0][0];
+		int y = (int) projection.matrix[0][1];
 		
-		ctx.setPaint(Color.YELLOW);
-		Ellipse2D.Double outline = new Ellipse2D.Double(x - radius, y - radius, radius*2, radius*2);
-		ctx.fill(outline);
+		for (int i = x - radius; i < x + radius; i++) {
+			int height = (int) Math.sqrt(radius*radius - (i - x)*(i - x));
+			for (int j = y - height; j < y + height; j++) {
+				Surface.setColor(i, j, 255, 255, 0);
+			}
+		}
 	}
 
 	@Override

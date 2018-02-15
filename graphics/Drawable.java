@@ -1,7 +1,5 @@
 package graphics;
 
-import java.awt.Graphics2D;
-
 import util.math.Vector;
 
 public interface Drawable {
@@ -9,12 +7,11 @@ public interface Drawable {
 	/**
 	 * Draws a visual representation of the object.
 	 * Will use the Camera class to find
-	 * Camera X, Y, Scale, and Rotation.
-	 * <p>
+	 * Camera X, Y, Scale, and Rotation. Draw with the
+	 * {@link Surface} object's {@link Surface#setColor(int, int, int, int, int)}.
 	 * 
-	 * @param ctx		context to draw the object on
 	 */
-	public void draw(Graphics2D ctx);
+	public void draw();
 	
 	/**
 	 * Returns a boolean which will decide if the object is drawn or not

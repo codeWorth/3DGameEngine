@@ -1,6 +1,5 @@
 package graphics;
 
-import java.awt.Graphics2D;
 import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,7 +7,6 @@ import java.util.ArrayList;
 
 import javax.swing.Timer;
 
-import graphics.shapes.Point;
 import graphics.shapes.RectPrism;
 import physics.PhysicsObject;
 import physics.Timeout;
@@ -16,12 +14,17 @@ import util.math.Vector;
 
 public class World {
 
-	public static Vector LIGHT_SOURCE = new Vector(3);
-	public static RectPrism MOVEY_BOI = new RectPrism(-300, 300, 800, 600, 600, 600);
+	public static long FPS = 0;
+	public static long writeTime = 0;
+	public static long sortTime = 0;
+	public static long mathTime = 0;
+	public static long totalDrawTime = 0;
 	
-	public static Graphics2D ctx;
+	public static Vector LIGHT_SOURCE = new Vector(3, 0, 0, 200);
+	public static RectPrism MOVEY_BOI = new RectPrism(0, 600, 1500, 600, 600, 600);
+	
 	public static Robot robot;
-	
+		
 	public static Timer timer;
 	public static int timerDelay = 100;
 	
@@ -36,14 +39,47 @@ public class World {
 	public static void initialize() {	
 				
 		add(MOVEY_BOI);
-		add(new RectPrism(800, 1200, -300, 600, 800, 600));
-		add(new RectPrism(100, -600, 1600, 400, 300, 700));
 		
-		for (int i = -10; i < 10; i++) {
-			add(new RectPrism(i * 400, 100, -i * 300, 200, 300, 200));
+		add(new Timeout() {
+			int ticks = 0;
+			
+			@Override
+			public long timeLeft() {
+				return 1;
+			}
+
+			@Override
+			public void timeTick() {
+				ticks++;
+				if (ticks == 5) {
+					ticks = 0;
+					
+					double total = (sortTime + mathTime + totalDrawTime + writeTime);
+					
+					System.out.println("Sort: " + String.valueOf(sortTime / total * 100) + "%");
+					System.out.println("Math: " + String.valueOf(mathTime / total * 100) + "%");
+					System.out.println("Total Draw: " + String.valueOf(totalDrawTime / total * 100) + "%");
+					System.out.println("Write: " + String.valueOf(writeTime / total * 100) + "%");
+					
+					mathTime = 0;
+					sortTime = 0;
+					totalDrawTime = 0;
+					writeTime = 0;
+					
+				}
+			}
+		});
+		
+		int dudes = 10;
+		
+		for (int i = -dudes; i < dudes; i++) {
+			for (int j = -dudes; j < dudes; j++) {
+				RectPrism boi = new RectPrism(i * 400 + 200, -400, j * 300 + 200, 200, 300, 200);
+				boi.color = (float)((i + dudes) * (j + dudes) / (dudes*dudes*4.0));
+				add(boi);
+			}
 		}
-		
-		add(new Point(0, 0, 0));
+
 		add(new Character());
 		add(new FrameCounter());
 		
@@ -72,21 +108,23 @@ public class World {
 		timer.start();
 	}
 	
-	public static void graphicsUpdate() {		
+	public static void graphicsUpdate() {
 		int size = visuals.size();
 		
-		for (int i = 1; i < size; i++) {
-			int j = i;
-			while (j > 0 && visuals.get(j).order() > visuals.get(j - 1).order()) {
-				swap(visuals, j, j - 1);
-				j--;
-			}
-		}
+		MOVEY_BOI.rotateX(0.05);
+		MOVEY_BOI.rotateY(0.05);
+		MOVEY_BOI.translate(3, 0, 3);
+		
+		double time = System.nanoTime();
+		
+		insertionSort(visuals, 0, size);
+		
+		sortTime += System.nanoTime() - time;
 		
 		for (int i = 0; i < size; i++) {
 			Drawable draw = visuals.get(i);
 			if ( draw.inCameraWindow() ) {
-				draw.draw(ctx);
+				draw.draw();
 			}
 		}
 				
@@ -95,7 +133,7 @@ public class World {
 			Object toRemoveObj = visualsToRemove.get(i);
 			visuals.remove(toRemoveObj);
 			visualsToRemove.remove(i);
-		}		
+		}	
 	}
 	
 	public static void physicsUpdate(double dT) {			
@@ -151,6 +189,21 @@ public class World {
 			timeouts.add((Timeout)obj);
 		}
 	}
+	
+	private static void insertionSort(ArrayList<Drawable> array, int lower, int upper) {
+		
+		for (int i = lower + 1; i < upper; i++) {
+			
+			int j = i;
+			while (j > 0 && array.get(j).order() > array.get(j - 1).order()) {
+				swap(array, j, j - 1);
+				j--;
+			}
+			
+		}
+		
+	}
+
 	
 	private static void swap(ArrayList<Drawable> array, int index1, int index2) {
 		Drawable obj = array.get(index1);
