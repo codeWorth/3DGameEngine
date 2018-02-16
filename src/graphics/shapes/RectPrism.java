@@ -192,8 +192,8 @@ public class RectPrism implements Drawable {
 	
 	public void translate(double dX, double dY, double dZ) {
 		this.position.matrix[0][0] += dX;
-		this.position.matrix[0][0] += dY;
-		this.position.matrix[0][0] += dZ;
+		this.position.matrix[0][1] += dY;
+		this.position.matrix[0][2] += dZ;
 	}
 	
 	public void rotateX(double angle) {

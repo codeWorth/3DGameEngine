@@ -20,6 +20,8 @@ public class World {
 	public static long mathTime = 0;
 	public static long totalDrawTime = 0;
 	
+	public static double t= 0;
+	
 	public static Vector LIGHT_SOURCE = new Vector(3, 0, 0, 200);
 	public static RectPrism MOVEY_BOI = new RectPrism(0, 600, 1500, 600, 600, 600);
 	
@@ -111,9 +113,11 @@ public class World {
 	public static void graphicsUpdate() {
 		int size = visuals.size();
 		
+		t += 0.1;
+		
 		MOVEY_BOI.rotateX(0.05);
 		MOVEY_BOI.rotateY(0.05);
-		MOVEY_BOI.translate(3, 0, 3);
+		MOVEY_BOI.translate(3, -10*Math.cos(t), 3);
 		
 		double time = System.nanoTime();
 		

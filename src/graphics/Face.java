@@ -137,7 +137,7 @@ public class Face {
 			double dXLM = lowestPoint.x() - middlePoint.x();
 			double dXLH = lowestPoint.x() - highestPoint.x();
 			
-			for (int j = 0; j < dYMH; j++) { // this goes from top (highestPoint) down (middlePoint)
+			for (int j = 0; j <= dYMH; j++) { // this goes from top (highestPoint) down (middlePoint)
 				int y = j + (int)highestPoint.y();
 				
 				int x1 = (int)(dXMH*(j / dYMH) + highestPoint.x());
@@ -148,12 +148,12 @@ public class Face {
 					x2 = hold;
 				}
 				
-				for (int x = x1; x < x2; x++) {
+				for (int x = x1-1; x <= x2; x++) {
 					Surface.setColor(x, y, r, g, b);
 				}
 			}
 			
-			for (int j = 0; j > -dYLM; j--) { // this goes from bottom (lowestPoint) up (middlePoint)
+			for (int j = 0; j >= -dYLM; j--) { // this goes from bottom (lowestPoint) up (middlePoint)
 				int y = j + (int)lowestPoint.y();
 				
 				int x1 = (int)(dXLM*(j / dYLM) + lowestPoint.x());
@@ -164,7 +164,7 @@ public class Face {
 					x2 = hold;
 				}
 				
-				for (int x = x1; x < x2; x++) {
+				for (int x = x1-1; x <= x2; x++) {
 					Surface.setColor(x, y, r, g, b);
 				}
 			}

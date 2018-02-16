@@ -6,7 +6,6 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBufferInt;
-import java.awt.image.DirectColorModel;
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
@@ -20,16 +19,18 @@ public class Surface extends JPanel implements Runnable {
 
 	public static final int colorRange = 255; //8 bits per color
 	public static final int bitsPerColor = 8;
-	public static final int rShiftBits = 0 * bitsPerColor; //Red channel is first 8 bits
+	public static final int rShiftBits = 2 * bitsPerColor; //Red channel is first 8 bits
 	public static final int gShiftBits = 1 * bitsPerColor; //Green channel is next 8 bits
-	public static final int bShiftBits = 2 * bitsPerColor; //Blue channel is last 8 bits
-	public static final int totalBits = rShiftBits + bShiftBits + gShiftBits;
+	public static final int bShiftBits = 0 * bitsPerColor; //Blue channel is last 8 bits
+	public static final int aShiftBits = 3 * bitsPerColor;
+	public static final int totalBits = rShiftBits + bShiftBits + gShiftBits + aShiftBits;
 	private static final int FPS = 60;
 	private static final int DELAY = 1000/FPS;
 	
 	public static BufferStrategy bs;
 	public static int[] raster;
     public static BufferedImage img;
+    private static Graphics g;
 	
 	/**
 	 * Sets a pixel to the given color, if that pixel exists.
@@ -47,6 +48,7 @@ public class Surface extends JPanel implements Runnable {
 			rgb = rgb | r << rShiftBits;
 			rgb = rgb | g << gShiftBits;
 			rgb = rgb | b << bShiftBits;
+			rgb = rgb | 255 << aShiftBits;
 			
 			int location = y * Camera.CAM_WIDTH + x;
 			raster[location] = rgb;
@@ -58,9 +60,10 @@ public class Surface extends JPanel implements Runnable {
 	public Surface() {
 		super();
 		
+		this.setDoubleBuffered(false);
 		raster = new int[Camera.CAM_WIDTH*Camera.CAM_HEIGHT];
 
-        ColorModel colorModel = new DirectColorModel(totalBits, 255<<rShiftBits, 255<<gShiftBits, 255<<bShiftBits);
+        ColorModel colorModel = ColorModel.getRGBdefault();
         DataBufferInt buffer = new DataBufferInt(raster, raster.length);
         SampleModel sampleModel = colorModel.createCompatibleSampleModel(Camera.CAM_WIDTH, Camera.CAM_HEIGHT);
         WritableRaster wrRaster = Raster.createWritableRaster(sampleModel, buffer, null);
@@ -91,21 +94,27 @@ public class Surface extends JPanel implements Runnable {
 
         while (true) {
         	
-        	
-        	double time = System.nanoTime();
-
 			World.FPS++;	
 			World.graphicsUpdate();
 			
-			Graphics g = bs.getDrawGraphics();     
+        	double time = System.nanoTime();
+			
+			g = bs.getDrawGraphics();     
 			g.setColor(Color.WHITE);
 			g.drawImage(img, 0, 0, null);
 			g.dispose();
+			g = null;
+			bs.show();
 			
 			World.totalDrawTime += System.nanoTime() - time;
 			
+			int clear = 0;
+			clear |= 0 << rShiftBits;
+			clear |= 0 << gShiftBits;
+			clear |= 0 << bShiftBits;
+			clear |= 255 << aShiftBits;
 			for (int i = 0; i < raster.length; i++) {
-				raster[i] = 0;
+				raster[i] = clear;
 			 }
 
             timeDiff = System.currentTimeMillis() - beforeTime;
