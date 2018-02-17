@@ -100,7 +100,6 @@ public class Surface extends JPanel implements Runnable {
         	double time = System.nanoTime();
 			
 			g = bs.getDrawGraphics();     
-			g.setColor(Color.WHITE);
 			g.drawImage(img, 0, 0, null);
 			g.dispose();
 			g = null;
