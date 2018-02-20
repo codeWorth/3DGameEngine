@@ -17,17 +17,59 @@ public class Camera {
 	public static Vector CAM_ROTATION() {
 		return kCAM_ROTATION;
 	}
-	public static void setRX(double amount) {
-		kCAM_ROTATION.matrix[0][0] = amount;
-		needRecompute = true;
+	public static void setRX(double rX) {
+		kCAM_ROTATION.matrix[0][0] = rX;
+		double rY = kCAM_ROTATION.matrix[0][1];
+		double rZ = kCAM_ROTATION.matrix[0][2];
+		
+		ALL_ROTATION_MATRIX.matrix[0][0] = Math.cos(rY)*Math.cos(rZ) - Math.sin(rX)*Math.sin(rY)*Math.sin(rZ);
+		ALL_ROTATION_MATRIX.matrix[1][0] = -Math.cos(rX)*Math.sin(rZ);
+		ALL_ROTATION_MATRIX.matrix[2][0] = Math.sin(rY)*Math.cos(rZ) + Math.sin(rX)*Math.cos(rY)*Math.sin(rZ);
+		ALL_ROTATION_MATRIX.matrix[0][1] = Math.cos(rY)*Math.sin(rZ) + Math.sin(rX)*Math.sin(rY)*Math.cos(rZ);
+		ALL_ROTATION_MATRIX.matrix[1][1] = Math.cos(rX)*Math.cos(rZ);
+		ALL_ROTATION_MATRIX.matrix[2][1] = Math.sin(rY)*Math.sin(rZ) - Math.sin(rX)*Math.cos(rY)*Math.cos(rZ);
+		ALL_ROTATION_MATRIX.matrix[0][2] = -Math.cos(rX) * Math.sin(rY);
+		ALL_ROTATION_MATRIX.matrix[1][2] = Math.sin(rX);
+		ALL_ROTATION_MATRIX.matrix[2][2] = Math.cos(rX)*Math.cos(rY);
 	}
-	public static void setRY(double amount) {
-		kCAM_ROTATION.matrix[0][1] = amount;
-		needRecompute = true;
+	public static void setRY(double rY) {
+		kCAM_ROTATION.matrix[0][1] = rY;
+		double rX = kCAM_ROTATION.matrix[0][0];
+		double rZ = kCAM_ROTATION.matrix[0][2];
+		
+		ALL_ROTATION_MATRIX.matrix[0][0] = Math.cos(rY)*Math.cos(rZ) - Math.sin(rX)*Math.sin(rY)*Math.sin(rZ);
+		ALL_ROTATION_MATRIX.matrix[2][0] = Math.sin(rY)*Math.cos(rZ) + Math.sin(rX)*Math.cos(rY)*Math.sin(rZ);
+		ALL_ROTATION_MATRIX.matrix[0][1] = Math.cos(rY)*Math.sin(rZ) + Math.sin(rX)*Math.sin(rY)*Math.cos(rZ);
+		ALL_ROTATION_MATRIX.matrix[2][1] = Math.sin(rY)*Math.sin(rZ) - Math.sin(rX)*Math.cos(rY)*Math.cos(rZ);
+		ALL_ROTATION_MATRIX.matrix[0][2] = -Math.cos(rX) * Math.sin(rY);
+		ALL_ROTATION_MATRIX.matrix[2][2] = Math.cos(rX)*Math.cos(rY);
 	}
-	public static void setRZ(double amount) {
-		kCAM_ROTATION.matrix[0][2] = amount;
-		needRecompute = true;
+	public static void setRZ(double rZ) {
+		kCAM_ROTATION.matrix[0][2] = rZ;
+		double rX = kCAM_ROTATION.matrix[0][0];
+		double rY = kCAM_ROTATION.matrix[0][1];
+		
+		ALL_ROTATION_MATRIX.matrix[0][0] = Math.cos(rY)*Math.cos(rZ) - Math.sin(rX)*Math.sin(rY)*Math.sin(rZ);
+		ALL_ROTATION_MATRIX.matrix[1][0] = -Math.cos(rX)*Math.sin(rZ);
+		ALL_ROTATION_MATRIX.matrix[2][0] = Math.sin(rY)*Math.cos(rZ) + Math.sin(rX)*Math.cos(rY)*Math.sin(rZ);
+		ALL_ROTATION_MATRIX.matrix[0][1] = Math.cos(rY)*Math.sin(rZ) + Math.sin(rX)*Math.sin(rY)*Math.cos(rZ);
+		ALL_ROTATION_MATRIX.matrix[1][1] = Math.cos(rX)*Math.cos(rZ);
+		ALL_ROTATION_MATRIX.matrix[2][1] = Math.sin(rY)*Math.sin(rZ) - Math.sin(rX)*Math.cos(rY)*Math.cos(rZ);
+	}
+	public static void setRXRY(double rX, double rY) {
+		kCAM_ROTATION.matrix[0][0] = rX;
+		kCAM_ROTATION.matrix[0][1] = rY;
+		double rZ = kCAM_ROTATION.matrix[0][2];
+		
+		ALL_ROTATION_MATRIX.matrix[0][0] = Math.cos(rY)*Math.cos(rZ) - Math.sin(rX)*Math.sin(rY)*Math.sin(rZ);
+		ALL_ROTATION_MATRIX.matrix[1][0] = -Math.cos(rX)*Math.sin(rZ);
+		ALL_ROTATION_MATRIX.matrix[2][0] = Math.sin(rY)*Math.cos(rZ) + Math.sin(rX)*Math.cos(rY)*Math.sin(rZ);
+		ALL_ROTATION_MATRIX.matrix[0][1] = Math.cos(rY)*Math.sin(rZ) + Math.sin(rX)*Math.sin(rY)*Math.cos(rZ);
+		ALL_ROTATION_MATRIX.matrix[1][1] = Math.cos(rX)*Math.cos(rZ);
+		ALL_ROTATION_MATRIX.matrix[2][1] = Math.sin(rY)*Math.sin(rZ) - Math.sin(rX)*Math.cos(rY)*Math.cos(rZ);
+		ALL_ROTATION_MATRIX.matrix[0][2] = -Math.cos(rX) * Math.sin(rY);
+		ALL_ROTATION_MATRIX.matrix[1][2] = Math.sin(rX);
+		ALL_ROTATION_MATRIX.matrix[2][2] = Math.cos(rX)*Math.cos(rY);
 	}
 	
 	private static Matrix rX = new Matrix(3, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -56,27 +98,22 @@ public class Camera {
 		return rZ;
 	}
 	
-	private static Matrix rAll = new Matrix(3, 3);
-	private static boolean needRecompute = true;
-	
 	// NOTE TO SELF: this matrix is different than the normal one because the order of multiplication is
 	// R_Y * R_Z * R_X. The important part is that R_Y is happening before R_Z and R_X.
 	// This matters because otherwise looking up also tilts the screen (around the Z axis).
-	public static Matrix ALL_ROTATION_MATRIX(double rX, double rY, double rZ) {
-		if (needRecompute) {
-			rAll.matrix[0][0] = Math.cos(rY)*Math.cos(rZ) - Math.sin(rX)*Math.sin(rY)*Math.sin(rZ);
-			rAll.matrix[1][0] = -Math.cos(rX)*Math.sin(rZ);
-			rAll.matrix[2][0] = Math.sin(rY)*Math.cos(rZ) + Math.sin(rX)*Math.cos(rY)*Math.sin(rZ);
-			rAll.matrix[0][1] = Math.cos(rY)*Math.sin(rZ) + Math.sin(rX)*Math.sin(rY)*Math.cos(rZ);
-			rAll.matrix[1][1] = Math.cos(rX)*Math.cos(rZ);
-			rAll.matrix[2][1] = Math.sin(rY)*Math.sin(rZ) - Math.sin(rX)*Math.cos(rY)*Math.cos(rZ);
-			rAll.matrix[0][2] = -Math.cos(rX) * Math.sin(rY);
-			rAll.matrix[1][2] = Math.sin(rX);
-			rAll.matrix[2][2] = Math.cos(rX)*Math.cos(rY);
-			needRecompute = false;
-		}
-		return rAll;
-	}
+	public static Matrix ALL_ROTATION_MATRIX = new Matrix(3, 3);
+	/*
+	private static void ALL_ROTATION_MATRIX(double rX, double rY, double rZ) {
+		ALL_ROTATION_MATRIX.matrix[0][0] = Math.cos(rY)*Math.cos(rZ) - Math.sin(rX)*Math.sin(rY)*Math.sin(rZ);
+		ALL_ROTATION_MATRIX.matrix[1][0] = -Math.cos(rX)*Math.sin(rZ);
+		ALL_ROTATION_MATRIX.matrix[2][0] = Math.sin(rY)*Math.cos(rZ) + Math.sin(rX)*Math.cos(rY)*Math.sin(rZ);
+		ALL_ROTATION_MATRIX.matrix[0][1] = Math.cos(rY)*Math.sin(rZ) + Math.sin(rX)*Math.sin(rY)*Math.cos(rZ);
+		ALL_ROTATION_MATRIX.matrix[1][1] = Math.cos(rX)*Math.cos(rZ);
+		ALL_ROTATION_MATRIX.matrix[2][1] = Math.sin(rY)*Math.sin(rZ) - Math.sin(rX)*Math.cos(rY)*Math.cos(rZ);
+		ALL_ROTATION_MATRIX.matrix[0][2] = -Math.cos(rX) * Math.sin(rY);
+		ALL_ROTATION_MATRIX.matrix[1][2] = Math.sin(rX);
+		ALL_ROTATION_MATRIX.matrix[2][2] = Math.cos(rX)*Math.cos(rY);
+	} */
 	
 	/**
 	 * Project a 3D vector onto the screen's 2d plane.
