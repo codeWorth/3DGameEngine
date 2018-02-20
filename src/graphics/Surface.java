@@ -43,16 +43,14 @@ public class Surface extends JPanel implements Runnable {
 	 * @param b Blue value, from 0 to 255
 	 */
 	public static void setColor(int x, int y, int r, int g, int b) {
-		if (x >= 0 && x < Camera.CAM_WIDTH && y >= 0 && y < Camera.CAM_HEIGHT) {
-			int rgb = 0;
-			rgb = rgb | r << rShiftBits;
-			rgb = rgb | g << gShiftBits;
-			rgb = rgb | b << bShiftBits;
-			rgb = rgb | 255 << aShiftBits;
-			
-			int location = y * Camera.CAM_WIDTH + x;
-			raster[location] = rgb;
-		}
+		int rgb = 0;
+		rgb = rgb | r << rShiftBits;
+		rgb = rgb | g << gShiftBits;
+		rgb = rgb | b << bShiftBits;
+		rgb = rgb | 255 << aShiftBits;
+		
+		int location = y * Camera.CAM_WIDTH + x;
+		raster[location] = rgb;
 	}
 	
 	private Thread t;

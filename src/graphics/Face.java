@@ -10,7 +10,6 @@ public class Face {
 	public Vector center;
 	
 	private int[][] trianglePaths;
-	private Vector tempVector = new Vector(3);
 	private Vector position;
 	
 	/**
@@ -59,11 +58,21 @@ public class Face {
 	 * @return true if the face is looking towards the camera
 	 */
 	public boolean isFacingCamera() {
-		tempVector.set(Camera.CAM_POSITION);
-		tempVector.subtract(this.position);
-		tempVector.subtract(this.center);
+		double x = Camera.CAM_POSITION.x();
+		double y = Camera.CAM_POSITION.y();
+		double z = Camera.CAM_POSITION.z();
 		
-		double dot = plane.normal.dot(tempVector);
+		x -= this.position.x() + this.center.x();
+		y -= this.position.y() + this.center.y();
+		z -= this.position.z() + this.center.z();
+		
+		double dot = plane.normal.x() * x + plane.normal.y() * y + plane.normal.z() * z;
+		
+		//tempVector.set(Camera.CAM_POSITION);
+		//tempVector.subtract(this.position);
+		//tempVector.subtract(this.center);
+		//double dot = plane.normal.dot(tempVector);
+		
 		return dot > 0;
 	}
 	
@@ -74,14 +83,27 @@ public class Face {
 	 * @return a number from -1 to 1 representing how intense the light should be
 	 */
 	public double getLightLevel(Vector source) {
-		tempVector.set(source);
+		double x = source.x();
+		double y = source.y();
+		double z = source.z();
+		
+		x -= this.position.x() + this.center.x();
+		y -= this.position.y() + this.center.y();
+		z -= this.position.z() + this.center.z();
+		
+		double dot = plane.normal.x() * x + plane.normal.y() * y + plane.normal.z() * z;
+		double invDistance = Vector.invSqrt(x*x + y*y + z*z);
+		
+		/*tempVector.set(source);
 		tempVector.subtract(this.position);
 		tempVector.subtract(this.center);
 				
 		double dot = plane.normal.dot(tempVector);
-		double distance = tempVector.length();
+		double distance = tempVector.length();*/
+		
+		
 		//double multFactor = Math.pow(1.1, distance * -0.003);
-		return dot / distance; //* multFactor;
+		return dot * invDistance; //* multFactor;
 	}
 	
 	public static Vector center(Vector... points) {
@@ -136,9 +158,12 @@ public class Face {
 			double dXMH = middlePoint.x() - highestPoint.x();
 			double dXLM = lowestPoint.x() - middlePoint.x();
 			double dXLH = lowestPoint.x() - highestPoint.x();
+						
+			int y1 = Math.max(0, (int)highestPoint.y());
+			int y2 = Math.min(Camera.CAM_HEIGHT - 1, (int)middlePoint.y());
 			
-			for (int j = 0; j <= dYMH; j++) { // this goes from top (highestPoint) down (middlePoint)
-				int y = j + (int)highestPoint.y();
+			for (int y = y1; y <= y2; y++) { // this goes from top (highestPoint) down (middlePoint)
+				int j = y - (int)highestPoint.y();
 				
 				int x1 = (int)(dXMH*(j / dYMH) + highestPoint.x());
 				int x2 = (int)(dXLH*(j / dYLH) + highestPoint.x());
@@ -148,13 +173,19 @@ public class Face {
 					x2 = hold;
 				}
 				
-				for (int x = x1-1; x <= x2; x++) {
+				x1 = Math.max(x1, 0);
+				x2 = Math.min(x2, Camera.CAM_WIDTH - 1);
+				
+				for (int x = x1; x <= x2; x++) {
 					Surface.setColor(x, y, r, g, b);
 				}
 			}
 			
-			for (int j = 0; j >= -dYLM; j--) { // this goes from bottom (lowestPoint) up (middlePoint)
-				int y = j + (int)lowestPoint.y();
+			int y3 = Math.min(Camera.CAM_HEIGHT - 1, (int)lowestPoint.y());
+			y2 = Math.max(0, (int)middlePoint.y());
+			
+			for (int y = y3; y >= y2; y--) { // this goes from bottom (lowestPoint) up (middlePoint)
+				int j = y - (int)lowestPoint.y();
 				
 				int x1 = (int)(dXLM*(j / dYLM) + lowestPoint.x());
 				int x2 = (int)(dXLH*(j / dYLH) + lowestPoint.x());
@@ -164,7 +195,10 @@ public class Face {
 					x2 = hold;
 				}
 				
-				for (int x = x1-1; x <= x2; x++) {
+				x1 = Math.max(x1, 0);
+				x2 = Math.min(x2, Camera.CAM_WIDTH - 1);
+				
+				for (int x = x1; x <= x2; x++) {
 					Surface.setColor(x, y, r, g, b);
 				}
 			}

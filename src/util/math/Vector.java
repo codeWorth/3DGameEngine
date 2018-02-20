@@ -248,4 +248,20 @@ public class Vector extends Matrix {
 		return new Vector(this.height, this.matrix[0]);
 	}
 	
+	/**
+	 * Fast inverse square root to find length of this vector over 1 (thanks Quake!)
+	 */
+	public double inverseLength() {
+		return invSqrt(this.length2());
+	}
+
+	public static double invSqrt(double x) {
+		double xhalf = 0.5d * x;
+	    long i = Double.doubleToLongBits(x);
+	    i = 0x5fe6ec85e7de30daL - (i >> 1);
+	    x = Double.longBitsToDouble(i);
+	    x *= (1.5d - xhalf * x * x);
+	    return x;
+	}
+	
 }

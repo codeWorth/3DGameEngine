@@ -28,7 +28,6 @@ public class RectPrism implements Drawable {
 	public Vector[] vertices;
 	public Vector[] resultVectors;
 	private Vector[] pVectors;
-	private Vector tempVector = new Vector(3);
 	private boolean inFrame = false;
 	private boolean needVectors = true;
 	
@@ -121,18 +120,19 @@ public class RectPrism implements Drawable {
 		needVectors = false;
 		double time = System.nanoTime();
 		
-		double[][] r = Camera.CAM_ROTATION().matrix;
-		double rX = r[0][0];
-		double rY = r[0][1];
-		double rZ = r[0][2];
-		Matrix rotMatrix = Camera.ALL_ROTATION_MATRIX(rX, rY, rZ);
+		Matrix rotMatrix = Camera.ALL_ROTATION_MATRIX;
 						
 		this.inFrame = false;
 		
 		for (int i = 0; i < 8; i++) {
-			tempVector.set(this.vertices[i]);
-			tempVector.add(this.position);
-			Matrix.productTranslate(tempVector, rotMatrix, Camera.CAM_POSITION, resultVectors[i]);
+			double x = this.vertices[i].matrix[0][0] + this.position.matrix[0][0] - Camera.CAM_POSITION.matrix[0][0];
+			double y = this.vertices[i].matrix[0][1] + this.position.matrix[0][1] - Camera.CAM_POSITION.matrix[0][1];
+			double z = this.vertices[i].matrix[0][2] + this.position.matrix[0][2] - Camera.CAM_POSITION.matrix[0][2];
+
+			resultVectors[i].matrix[0][0] = x*rotMatrix.matrix[0][0] + y*rotMatrix.matrix[1][0] + z*rotMatrix.matrix[2][0];
+			resultVectors[i].matrix[0][1] = x*rotMatrix.matrix[0][1] + y*rotMatrix.matrix[1][1] + z*rotMatrix.matrix[2][1];
+			resultVectors[i].matrix[0][2] = x*rotMatrix.matrix[0][2] + y*rotMatrix.matrix[1][2] + z*rotMatrix.matrix[2][2];
+			
 			Camera.projectVector(resultVectors[i], pVectors[i]);
 			
 			if (!this.inFrame && resultVectors[i].matrix[0][2] > 0 && Camera.inFrame(pVectors[i])) {

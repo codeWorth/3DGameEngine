@@ -38,11 +38,7 @@ public class Point implements Drawable {
 		_position.set(position);
 		_position.subtract(Camera.CAM_POSITION);
 		
-		double[][] r = Camera.CAM_ROTATION().matrix;
-		double rX = r[0][0];
-		double rY = r[0][1];
-		double rZ = r[0][2];
-		Matrix.product(_position, Camera.ALL_ROTATION_MATRIX(rX, rY, rZ), result);
+		Matrix.product(_position, Camera.ALL_ROTATION_MATRIX, result);
 		
 		return result.matrix[0][2] >= 0;
 	}

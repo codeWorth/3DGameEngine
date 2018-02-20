@@ -41,6 +41,7 @@ public class World {
 	public static void initialize() {	
 				
 		add(MOVEY_BOI);
+		Camera.setRXRY(0, 0.2);
 		
 		add(new Timeout() {
 			int ticks = 0;

@@ -51,8 +51,7 @@ public class MouseBind implements MouseMotionListener {
 			this.mouseY = Math.PI/2;
 		}
 		
-		Camera.setRY(-this.mouseX);
-		Camera.setRX(-this.mouseY);
+		Camera.setRXRY(-this.mouseY, -this.mouseX);
 		
 		if (mX > Camera.CAM_WIDTH - tolerance || mX < tolerance || mY > Camera.CAM_HEIGHT - tolerance || mY < tolerance+50) {
 			World.robot.mouseMove(Camera.CAM_WIDTH/2, Camera.CAM_HEIGHT/2);
