@@ -120,12 +120,8 @@ public class World {
 		MOVEY_BOI.rotateY(0.05);
 		MOVEY_BOI.translate(3, -10*Math.cos(t), 3);
 		
-		double time = System.nanoTime();
-		
-		insertionSort(visuals, 0, size);
-		
-		sortTime += System.nanoTime() - time;
-		
+		//insertionSort(visuals, 0, size);
+				
 		for (int i = 0; i < size; i++) {
 			Drawable draw = visuals.get(i);
 			if ( draw.inCameraWindow() ) {
